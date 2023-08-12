@@ -100,8 +100,25 @@ async function loadMainWelcome(driver) {
     );
 
     await driver.switchTo().frame(iframe);
-    await driver.wait(until.elementLocated(By.css(".oj-complete")));
+    await driver.wait(until.elementLocated(By.css(".oj-complete")), 60 * 1000);
     await driver.switchTo().defaultContent();
+}
+
+async function clickWelcome(driver) {
+    const cssLocator = By.css(
+        "#vbcs-pageStructure__treeview .oj-treeview-item"
+    );
+    const treeItems = await driver.findElements(cssLocator);
+
+    for (const treeItem of treeItems) {
+        const headingText = await treeItem.findElement(
+            By.xpath(".//span[contains(text(),'Heading')]")
+        );
+        if (headingText) {
+            await headingText.click();
+            break;
+        }
+    }
 }
 
 async function main() {
@@ -128,6 +145,8 @@ async function main() {
         // Find and enter countries > flows > main > main-welcome, wait for canvas to load
         await loadMainWelcome(driver);
 
+        // Click 'Welcome' text in the drop menu
+        await clickWelcome(driver);
     } catch (error) {
         console.error("An error occurred:", error);
     } finally {
