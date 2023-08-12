@@ -1,5 +1,6 @@
 const webdriver = require("selenium-webdriver");
-const { By, until } = require("selenium-webdriver");
+const { By, until, Key } = require("selenium-webdriver");
+
 const keys = require("./keys.json");
 
 async function visitAndLogin(driver, oracle_url, loginName, loginPassword) {
@@ -121,6 +122,24 @@ async function clickWelcome(driver) {
     }
 }
 
+async function changeHeading(driver) {
+    const inputSelector = By.id("general_prop__text_text|input");
+    const inputElement = await driver.wait(
+        until.elementLocated(inputSelector),
+        2000
+    );
+    await driver.wait(until.elementIsEnabled(inputElement), 2000);
+    await inputElement.clear();
+    await inputElement.sendKeys("Hello World!", Key.ENTER);
+}
+
+async function runApp(driver) {
+    const runButton = await driver.findElement(
+        By.css("span.vbcs-icon-font.vbcs-icon__play")
+    );
+    runButton.click();
+}
+
 async function main() {
     // Get URL and keys for logging
     const ORACLE_URL = "https://i1-abcsprod.builder.europe.oraclecloud.com";
@@ -147,6 +166,12 @@ async function main() {
 
         // Click 'Welcome' text in the drop menu
         await clickWelcome(driver);
+
+        // Change heading text to 'Hello world!'
+        await changeHeading(driver);
+
+        // Run the application
+        await runApp(driver);
     } catch (error) {
         console.error("An error occurred:", error);
     } finally {
