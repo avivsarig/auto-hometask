@@ -2,7 +2,7 @@ const webdriver = require("selenium-webdriver");
 const { By, until } = require("selenium-webdriver");
 const keys = require("./keys.json");
 
-async function visit_and_login(driver, oracle_url, login_name, login_pw) {
+async function visitAndLogin(driver, oracle_url, loginName, loginPassword) {
     try {
         await driver.get(oracle_url);
 
@@ -11,8 +11,8 @@ async function visit_and_login(driver, oracle_url, login_name, login_pw) {
         );
         const passwordField = await driver.findElement(By.id("password"));
 
-        await usernameField.sendKeys(login_name);
-        await passwordField.sendKeys(login_pw);
+        await usernameField.sendKeys(loginName);
+        await passwordField.sendKeys(loginPassword);
 
         await driver.findElement(By.id("signin")).click();
     } catch (error) {
@@ -35,7 +35,7 @@ function parseRowContent(rowContent) {
     };
 }
 
-async function print_last_but_one(driver) {
+async function printLastButOne(driver) {
     const table = await driver.wait(
         until.elementLocated(By.className("oj-table-element"))
     );
@@ -50,33 +50,84 @@ async function print_last_but_one(driver) {
         const lastButOneRowContent = await lastButOneRow.getText();
 
         const result = parseRowContent(lastButOneRowContent);
-        console.log(result.name);
+        console.log(
+            `🔍 The last but one application on the list is ${result.name}`
+        );
     } else {
         console.warn(
-            "Not enough rows in the table to select the last but one."
+            "⚠️ Not enough rows in the table to select the last but one."
         );
     }
+}
+
+async function loadMainWelcome(driver) {
+    // Find the tree list menu and click the icon the expands the 'main' branch
+    const mainLocator = By.css(
+        "li#webApps_-_countries_-_app-flow li#webApps_-_countries_-_flows li#webApps_-_countries_-_flows_-_main_-_main-flow"
+    );
+
+    const main = await driver.wait(until.elementLocated(mainLocator), 3000);
+    const mainExpendButton = await main.findElement(
+        By.css("ins.oj-treeview-icon")
+    );
+    await driver.wait(until.elementIsEnabled(mainExpendButton), 500);
+    mainExpendButton.click();
+
+    // In countries→flows→main find main-welcome and click on it
+    const mainListLocator = By.css(
+        "li#webApps_-_countries_-_app-flow li#webApps_-_countries_-_flows li#webApps_-_countries_-_flows_-_main_-_main-flow ul.oj-treeview-list"
+    );
+
+    const mainList = await driver.wait(
+        until.elementLocated(mainListLocator),
+        3000
+    );
+
+    mainWelcome = mainList.findElement(
+        By.css(
+            "li#webApps_-_countries_-_flows_-_main_-_pages_-_main-welcome-page span.oj-treeview-item-text"
+        )
+    );
+    await driver.wait(until.elementIsEnabled(mainWelcome), 2000);
+    mainWelcome.click();
+
+    // wait for iframe content to be loaded
+    const iframe = await driver.wait(
+        until.elementLocated(
+            By.css(".preview-iframe__container .preview-iframe")
+        ),
+        30000
+    );
+
+    await driver.switchTo().frame(iframe);
+    await driver.wait(until.elementLocated(By.css(".oj-complete")));
+    await driver.switchTo().defaultContent();
 }
 
 async function main() {
     // Get URL and keys for logging
     const ORACLE_URL = "https://i1-abcsprod.builder.europe.oraclecloud.com";
-    const login_name = keys.LOGIN_NAME;
-    const login_pw = keys.LOGIN_PW;
+    const loginName = keys.LOGIN_NAME;
+    const loginPassword = keys.LOGIN_PW;
 
     const driver = new webdriver.Builder().forBrowser("chrome").build();
 
     try {
         // Use credentials from keys.json to login
-        await visit_and_login(driver, ORACLE_URL, login_name, login_pw);
+        await visitAndLogin(driver, ORACLE_URL, loginName, loginPassword);
 
-        // Wait for the list of 
-        await print_last_but_one(driver);
+        // Wait for the list of apps to load and print the last one
+        await printLastButOne(driver);
 
+        // Enter Test App #1
         const testAppButton = await driver.findElement(
             By.xpath("//button[contains(text(),'Test App #1')]")
         );
         testAppButton.click();
+
+        // Find and enter countries > flows > main > main-welcome, wait for canvas to load
+        await loadMainWelcome(driver);
+
     } catch (error) {
         console.error("An error occurred:", error);
     } finally {
