@@ -42,9 +42,3 @@ Ensure that the `keys.json` file is present in the project directory with the re
     ```bash
     node index.js
     ```
-
-## Troubleshooting
-
-If you encounter any errors related to ES modules, make sure that the files have the correct extensions (e.g., `.cjs` for CommonJS).
-
----
