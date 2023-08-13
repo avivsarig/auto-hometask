@@ -140,6 +140,24 @@ async function runApp(driver) {
     runButton.click();
 }
 
+async function switchToNewTab(driver) {
+    await driver.sleep(3000);
+    const handles = await driver.getAllWindowHandles();
+    if (handles.length > 1) {
+        await driver.switchTo().window(handles[handles.length - 1]);
+    } else {
+        console.warn("No new tab found");
+    }
+}
+
+async function checkH1HelloWorld(driver) {
+    await driver.wait(until.elementLocated(By.css(".oj-flex")), 15000);
+    await driver.sleep(1000);
+    const headings = await driver.findElement(By.css("h1.oj-flex-item"));
+    const elementContent = await headings.getText();
+    return elementContent === "Hello World!";
+}
+
 async function main() {
     // Get URL and keys for logging
     const ORACLE_URL = "https://i1-abcsprod.builder.europe.oraclecloud.com";
@@ -170,12 +188,21 @@ async function main() {
         // Change heading text to 'Hello world!'
         await changeHeading(driver);
 
-        // Run the application
+        // Run the application and move to the new tab
         await runApp(driver);
+        await switchToNewTab(driver);
+
+        // Test if 'Hello World!' is displayed and print
+        const testResult = await checkH1HelloWorld(driver);
+
+        const output = `The test ${testResult ? "succeeded" : "failed"}!`;
+        console.log(output);
+
+        return testResult;
     } catch (error) {
         console.error("An error occurred:", error);
     } finally {
-        setTimeout(() => driver.quit(), 10000);
+        setTimeout(() => driver.quit(), 2000);
     }
 }
 
