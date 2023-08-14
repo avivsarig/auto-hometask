@@ -7,10 +7,11 @@ import * as nav from "./nav.js";
 import * as check from "./check.js";
 
 import keys from "./keys.json" assert { type: "json" };
+import settings from "./setting.json" assert { type: "json" };
 
 async function main() {
     // Get URL and keys for logging
-    const ORACLE_URL = "https://i1-abcsprod.builder.europe.oraclecloud.com";
+    const URL = settings.ORACLE_URL;
     const loginName = keys.LOGIN_NAME;
     const loginPassword = keys.LOGIN_PW;
 
@@ -18,7 +19,7 @@ async function main() {
 
     try {
         // Use credentials from keys.json to login
-        await auth.visitAndLogin(driver, ORACLE_URL, loginName, loginPassword);
+        await auth.visitAndLogin(driver, URL, loginName, loginPassword);
 
         // Wait for the list of apps to load and print the last one
         await table.printLastButOne(driver);
