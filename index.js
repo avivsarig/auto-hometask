@@ -7,11 +7,24 @@ import * as nav from "./nav.js";
 import * as check from "./check.js";
 
 import keys from "./keys.json" assert { type: "json" };
-import settings from "./setting.json" assert { type: "json" };
+import config from "./config.json" assert { type: "json" };
 
 async function main() {
+    /**
+     * Automates specific tasks within Oracle's platform:
+     * 1. Log into Oracle Cloud.
+     * 2. Print last but one application name.
+     * 3. Navigate to "Test App #1".
+     * 4. Navigate to "countries > flows > main > main-welcome".
+     * 5. Click "Welcome", change text to "Hello world!" or a custom heading if provided.
+     * 6. Preview application, verify new heading, print result.
+     *
+     * @param {string} [process.argv[2]] - Optional new heading to be set. If not provided, defaults to "Hello world!".
+     * @throws Prints an error message if an error occurs.
+     */
+
     // Get URL and keys for logging
-    const URL = settings.ORACLE_URL;
+    const URL = config.ORACLE_URL;
     const loginName = keys.LOGIN_NAME;
     const loginPassword = keys.LOGIN_PW;
 
@@ -36,8 +49,9 @@ async function main() {
         // Click 'Welcome' text in the drop menu
         await nav.clickWelcome(driver);
 
-        // Change heading text to 'Hello world!'
-        await nav.changeHeading(driver);
+        // Change heading text to 'Hello world!' or any other heading provided as an argument
+        const newHeading = process.argv[2];
+        await nav.changeHeading(driver, newHeading);
 
         // Run the application and move to the new tab
         await nav.runApp(driver);

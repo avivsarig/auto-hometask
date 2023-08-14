@@ -1,6 +1,14 @@
 import { By, until, Key } from "selenium-webdriver";
 
 export async function loadMainWelcome(driver) {
+    /**
+     * 1. Expands the 'main' branch within the 'countries > flows' tree.
+     * 2. Clicks on 'main-welcome' within the 'main' branch.
+     * 3. Waits for the associated iframe to load completely.
+     *
+     * @param {Object} driver - Selenium WebDriver object.
+     */
+
     // Find the tree list menu and click the icon the expands the 'main' branch
     const mainLocator = By.css(
         "li#webApps_-_countries_-_app-flow li#webApps_-_countries_-_flows li#webApps_-_countries_-_flows_-_main_-_main-flow"
@@ -45,6 +53,12 @@ export async function loadMainWelcome(driver) {
 }
 
 export async function clickWelcome(driver) {
+    /**
+     * Clicks on the "Welcome" Heading element within the Page Structure navigator.
+     *
+     * @param {Object} driver - Selenium WebDriver object.
+     */
+
     const cssLocator = By.css(
         "#vbcs-pageStructure__treeview .oj-treeview-item"
     );
@@ -61,7 +75,14 @@ export async function clickWelcome(driver) {
     }
 }
 
-export async function changeHeading(driver) {
+export async function changeHeading(driver, newHeading = "Hello World!") {
+    /**
+     * Changes the value of the "Text" property from "Welcome" to a specified heading, defaulting to "Hello world!".
+     *
+     * @param {Object} driver - Selenium WebDriver object.
+     * @param {string} newHeading - The new heading text to replace "Welcome". Defaults to "Hello World!".
+     */
+
     const inputSelector = By.id("general_prop__text_text|input");
     const inputElement = await driver.wait(
         until.elementLocated(inputSelector),
@@ -69,10 +90,16 @@ export async function changeHeading(driver) {
     );
     await driver.wait(until.elementIsEnabled(inputElement), 2000);
     await inputElement.clear();
-    await inputElement.sendKeys("Hello World!", Key.ENTER);
+    await inputElement.sendKeys(newHeading, Key.ENTER);
 }
 
 export async function runApp(driver) {
+    /**
+     * Clicks the "Run" button from the main toolbar to preview the application.
+     *
+     * @param {Object} driver - Selenium WebDriver object.
+     */
+
     const runButton = await driver.findElement(
         By.css("span.vbcs-icon-font.vbcs-icon__play")
     );
@@ -80,6 +107,13 @@ export async function runApp(driver) {
 }
 
 export async function switchToNewTab(driver) {
+    /**
+     * Switches to the new browser tab opened after running the application.
+     * Issues a warning if no new tab is found.
+     *
+     * @param {Object} driver - Selenium WebDriver object.
+     */
+
     await driver.sleep(3000);
     const handles = await driver.getAllWindowHandles();
     if (handles.length > 1) {

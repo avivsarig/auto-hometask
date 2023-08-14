@@ -6,6 +6,17 @@ export async function visitAndLogin(
     loginName,
     loginPassword
 ) {
+    /**
+     * Visits the Oracle URL and logs in using the provided credentials.
+     * Uses Selenium WebDriver to interact with the web page.
+     *
+     * @param {object} driver - WebDriver instance controlling a browser.
+     * @param {string} oracle_url - URL of the Oracle login page.
+     * @param {string} loginName - User's login name.
+     * @param {string} loginPassword - User's login password.
+     * @throws Will print an error message to the console if an error occurs.
+     */
+
     try {
         await driver.get(oracle_url);
 

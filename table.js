@@ -1,6 +1,10 @@
 import { By, until } from "selenium-webdriver";
 
 function parseRowContent(rowContent) {
+    /**
+     * Parses the row content to extract its contents.
+     */
+
     const [name, status, versionAndLastModified] = rowContent.split("\n");
     const [version, lastModified] = versionAndLastModified.split(" ", 2);
 
@@ -16,6 +20,12 @@ function parseRowContent(rowContent) {
 }
 
 export async function printLastButOne(driver) {
+    /**
+     * Finds out the name of the last but one application in the Oracle Visual Builder Cloud Service and prints it to the standard output.
+     *
+     * @param {Object} driver - Selenium WebDriver object.
+     */
+
     const table = await driver.wait(
         until.elementLocated(By.className("oj-table-element"))
     );
