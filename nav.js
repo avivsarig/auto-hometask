@@ -122,3 +122,19 @@ export async function switchToNewTab(driver) {
         console.warn("No new tab found");
     }
 }
+
+export async function switchOneTabBack(driver) {
+    /**
+     * Switches to the previous browser tab opened after running the application.
+     * Issues a warning if no previous tab is found.
+     *
+     * @param {Object} driver - Selenium WebDriver object.
+     */
+
+    const handles = await driver.getAllWindowHandles();
+    if (handles.length >= 2) {
+        await driver.switchTo().window(handles[handles.length - 2]);
+    } else {
+        console.warn("No previous tab found");
+    }
+}

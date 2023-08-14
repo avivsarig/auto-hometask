@@ -23,6 +23,12 @@ async function main() {
      * @throws Prints an error message if an error occurs.
      */
 
+    // Get process arguments
+    const args = process.argv.slice(2);
+    const newHeading =
+        args.includes("--reset") && args[0] !== "--reset" ? args[0] : undefined;
+    const resetFlag = args.includes("--reset");
+
     // Get URL and keys for logging
     const URL = config.ORACLE_URL;
     const loginName = keys.LOGIN_NAME;
@@ -50,7 +56,6 @@ async function main() {
         await nav.clickWelcome(driver);
 
         // Change heading text to 'Hello world!' or any other heading provided as an argument
-        const newHeading = process.argv[2];
         await nav.changeHeading(driver, newHeading);
 
         // Run the application and move to the new tab
@@ -59,6 +64,12 @@ async function main() {
 
         // Test if 'Hello World!' is displayed and print
         const testResult = await check.checkH1HelloWorld(driver);
+
+        // if script has "--reset" argument - set the heading back to 'Welcome'
+        if (resetFlag) {
+            await nav.switchOneTabBack(driver);
+            await nav.changeHeading(driver, "Welcome");
+        }
 
         const output = `The test ${testResult ? "succeeded" : "failed"}!`;
         console.log(output);
